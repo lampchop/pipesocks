@@ -34,8 +34,8 @@ MainForm::MainForm(QObject *rootObject,QObject *parent):QObject(parent) {
     dump=pipesocks->findChild<QObject*>("dump");
     info=about->findChild<QObject*>("info");
     server=NULL;
-    headerText->setProperty("text","pipesocks "+Version::GetVersion());
-    info->setProperty("text","pipesocks "+Version::GetVersion()+"\nCopyright (C) 2017  yvbbrjdr\nIcon by Rena\nQt by The Qt Company Ltd.\nlibsodium by jedisct1\nLicensed by GPL v3");
+    headerText->setProperty("text","pipesocks "+Version::GetHighestVersion());
+    info->setProperty("text","pipesocks "+Version::GetHighestVersion()+"\nCopyright (C) 2017  yvbbrjdr\nIcon by Rena\nQt by The Qt Company Ltd.\nlibsodium by jedisct1\nLicensed by GPL v3");
     connect(pump,SIGNAL(clicked()),this,SLOT(pumpClicked()));
     connect(pipe,SIGNAL(clicked()),this,SLOT(pipeClicked()));
     connect(tap,SIGNAL(clicked()),this,SLOT(tapClicked()));
@@ -134,7 +134,7 @@ void MainForm::startClicked() {
         password->setProperty("enabled",false);
         start->setProperty("text","Stop");
         headerText->setProperty("text","Enjoy!");
-        settings->setValue("pipesocks/version",Version::GetVersion());
+        settings->setValue("pipesocks/version",Version::GetHighestVersion());
         settings->beginGroup("default");
         if (pump->property("checked").toBool()) {
             settings->setValue("type","pump");
@@ -155,12 +155,15 @@ void MainForm::startClicked() {
         pump->setProperty("enabled",true);
         pipe->setProperty("enabled",true);
         tap->setProperty("enabled",true);
-        remoteHost->setProperty("enabled",true);
-        remotePort->setProperty("enabled",true);
-        localPort->setProperty("enabled",true);
-        password->setProperty("enabled",true);
+        if (pump->property("checked").toBool()) {
+            pumpClicked();
+        } else if (pipe->property("checked").toBool()) {
+            pipeClicked();
+        } else if (tap->property("checked").toBool()) {
+            tapClicked();
+        }
         start->setProperty("text","Start");
-        headerText->setProperty("text","pipesocks "+Version::GetVersion());
+        headerText->setProperty("text","pipesocks "+Version::GetHighestVersion());
     }
 }
 
